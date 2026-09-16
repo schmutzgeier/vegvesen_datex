@@ -196,7 +196,7 @@ class DatexCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 data["weather"][str(site_id)] = await self.client.fetch_measured_weather_site(str(site_id))
                 succeeded += 1
             except Exception as err:
-                _LOGGER.warning("vegvesen_datex: weather fetch failed for site %s: %s", site_id, err)
+                _LOGGER.warning("vegvesen_datex: weather fetch failed for site %s: %s: %s", site_id, type(err).__name__, err)
 
         # TRAVEL TIME: a single nationwide snapshot covering every predefined
         # location, so it's fetched once per cycle and parsed for all locations
@@ -210,7 +210,7 @@ class DatexCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 all_travel_times = self.client.parse_travel_time_data(tt_xml)
                 succeeded += 1
             except Exception as err:
-                _LOGGER.warning("vegvesen_datex: travel time fetch failed: %s", err)
+                _LOGGER.warning("vegvesen_datex: travel time fetch failed: %s: %s", type(err).__name__, err)
 
         for seg in self.segments:
             if seg.get(CONF_ITEM_TYPE) != TYPE_TRAVEL_TIME:
@@ -231,7 +231,7 @@ class DatexCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 events = self.client.parse_situation_events(xml)
                 succeeded += 1
             except Exception as err:
-                _LOGGER.warning("vegvesen_datex: situation fetch failed: %s", err)
+                _LOGGER.warning("vegvesen_datex: situation fetch failed: %s: %s", type(err).__name__, err)
 
         if attempted and not succeeded:
             raise UpdateFailed("All DATEX data sources failed this update - see warnings above")

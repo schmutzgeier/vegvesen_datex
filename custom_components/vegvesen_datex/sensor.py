@@ -260,6 +260,12 @@ class _TravelTimeDelaySensor(SensorEntity):
     """
 
     _attr_has_entity_name = True
+    # Same reason as _MeasuredValueSensor above: the coordinator pushes updates
+    # through the listener in async_added_to_hass. Left polling, this one entity
+    # was enough to produce "Updating vegvesen_datex sensor took longer than the
+    # scheduled update interval 0:00:30" - the sensor platform's 30s default -
+    # since every poll queued another network refresh that fetched nothing new.
+    _attr_should_poll = False
     _attr_device_class = SensorDeviceClass.DURATION
     _attr_native_unit_of_measurement = UnitOfTime.SECONDS
     _attr_state_class = SensorStateClass.MEASUREMENT
